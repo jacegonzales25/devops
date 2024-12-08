@@ -6,69 +6,61 @@ TOMURL=$(curl -s https://tomcat.apache.org/download-11.cgi | grep -Eo 'https://d
 # Install required packages
 dnf -y install java-17-openjdk java-17-openjdk-devel git maven wget
 
-# Download and extract Tomcat
 cd /tmp/
 wget $TOMURL -O tomcatbin.tar.gz
-EXTOUT=$(tar xzvf tomcatbin.tar.gz)
-TOMDIR=$(echo $EXTOUT | head -n 1 | cut -d '/' -f1)
-
-# Create Tomcat user and move files
+EXTOUT=`tar xzvf tomcatbin.tar.gz`
+TOMDIR=`echo $EXTOUT | cut -d '/' -f1`
 useradd --shell /sbin/nologin tomcat
-mv /tmp/$TOMDIR /usr/local/tomcat
-chown -R tomcat:tomcat /usr/local/tomcat
+rsync -avzh /tmp/$TOMDIR/ /usr/local/tomcat/
+chown -R tomcat.tomcat /usr/local/tomcat
 
-# Create systemd service file for Tomcat
-cat <<EOT > /etc/systemd/system/tomcat.service
+rm -rf /etc/systemd/system/tomcat.service
+
+cat <<EOT>> /etc/systemd/system/tomcat.service
 [Unit]
 Description=Tomcat
 After=network.target
 
 [Service]
+
 User=tomcat
 Group=tomcat
 
 WorkingDirectory=/usr/local/tomcat
 
-Environment=JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+#Environment=JRE_HOME=/usr/lib/jvm/jre
+Environment=JAVA_HOME=/usr/lib/jvm/jre
+
+Environment=CATALINA_PID=/var/tomcat/%i/run/tomcat.pid
 Environment=CATALINA_HOME=/usr/local/tomcat
-Environment=CATALINA_BASE=/usr/local/tomcat
-Environment=CATALINA_PID=/var/tomcat/run/tomcat.pid
+Environment=CATALINE_BASE=/usr/local/tomcat
 
 ExecStart=/usr/local/tomcat/bin/catalina.sh run
 ExecStop=/usr/local/tomcat/bin/shutdown.sh
+
 
 RestartSec=10
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
+
 EOT
 
-# Reload systemd and start Tomcat
-mkdir -p /var/tomcat/run
-chown -R tomcat:tomcat /var/tomcat
 systemctl daemon-reload
-systemctl enable tomcat
 systemctl start tomcat
+systemctl enable tomcat
 
-# Clone and build the project
 git clone -b main https://github.com/hkhcoder/vprofile-project.git
 cd vprofile-project
 mvn install
-
-# Deploy WAR file
-if [ -f target/vprofile-v2.war ]; then
-    systemctl stop tomcat
-    rm -rf /usr/local/tomcat/webapps/ROOT*
-    cp target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
-    systemctl start tomcat
-else
-    echo "WAR file not found. Build failed!"
-    exit 1
-fi
-
-# Configure firewall
-firewall-cmd --permanent --add-port=8080/tcp
-firewall-cmd --reload
-
-echo "Tomcat setup and application deployment complete!"
+systemctl stop tomcat
+sleep 20
+rm -rf /usr/local/tomcat/webapps/ROOT*
+cp target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
+systemctl start tomcat
+sleep 20
+systemctl stop firewalld
+systemctl disable firewalld
+#cp /vagrant/application.properties /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/application.properties
+systemctl restart tomcat
