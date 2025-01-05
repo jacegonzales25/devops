@@ -1,3 +1,8 @@
 .vagrant
 .terraform
 .env
+.keys
+
+#specific
+dovekey
+dovekey.pub
