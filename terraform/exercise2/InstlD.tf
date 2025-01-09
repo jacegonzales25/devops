@@ -14,7 +14,7 @@ data "aws_ami" "amiID" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-#canonical owner
+  #canonical owner
   owners = ["099720109477"]
 }
 #output is like print where there is a desc like "instance_id"
