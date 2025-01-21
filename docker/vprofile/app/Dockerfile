@@ -7,6 +7,9 @@ RUN cd vprofile-project && git checkout containers && mvn install
 # Two images to make it more modular
 # Below is a service image
 FROM tomcat:10-jdk21
+LABEL "Project"="vprofile"
+LABEL "Author"="Jace"
+
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=BUILD_IMAGE vprofile-project/target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
 
