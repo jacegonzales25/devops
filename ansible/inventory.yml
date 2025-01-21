@@ -1,0 +1,25 @@
+all:
+  children:
+    webservers:
+      hosts:
+        webserver1:
+          ansible_host: 192.168.1.101
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: /path/to/private/key
+        webserver2:
+          ansible_host: 192.168.1.102
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: /path/to/private/key
+
+    dbservers:
+      hosts:
+        dbserver1:
+          ansible_host: 192.168.1.201
+          ansible_user: root
+          ansible_password: password123
+
+    dc_oregon:
+      children:
+        webservers: 
+        dbservers:
+  

@@ -1,0 +1,46 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create a new EC2 key pair and return the generated private key
+      # Use no_log to avoid private key being displayed in the output
+      amazon.aws.ec2_key:
+        name: my_keypair
+      register: aws_ec2_key_pair
+      no_log: true
+
+    - name: Save the private key to a file
+      copy:
+        content: "{{ aws_ec2_key_pair.key.private_key }}"
+        dest: ./my_keypair.pem
+        mode: '0400'  # Ensure the file is secure
+      when: aws_ec2_key_pair.changed
+
+    - name: Print keypair creation result
+      debug:
+        var: aws_ec2_key_pair
+
+# Block type execution
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - block:
+        - name: Create a new EC2 key pair and return the generated private key
+          amazon.aws.ec2_key:
+            name: my_keypair
+          register: aws_ec2_key_pair
+          no_log: true
+
+        - name: Save the private key to a file
+          copy:
+            content: "{{ aws_ec2_key_pair.key.private_key }}"
+            dest: ./my_keypair.pem
+            mode: '0400'
+          when: aws_ec2_key_pair.changed
+
+        - name: Print keypair creation result
+          debug:
+            var: aws_ec2_key_pair
+      rescue:
+        - name: Handle error in key pair creation
+          debug:
+            msg: "An error occurred while creating the EC2 key pair."
