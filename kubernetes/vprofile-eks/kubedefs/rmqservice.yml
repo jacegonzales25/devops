@@ -1,0 +1,14 @@
+# Depends on the application properties
+apiVersion: v1
+kind: Service
+metadata:
+  name: vpromq01 #Name of the service
+spec:
+  ports:
+  - port: 5672
+    targetPort: vprormq-port
+    protocol: TCP
+  selector:
+    app: vprormq
+  type: ClusterIP
+#Private connection to db
