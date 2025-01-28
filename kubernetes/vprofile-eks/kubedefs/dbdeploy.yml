@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: vprodb
-      #public image
-        image: vprocontainers/vprofiledb
+      #public image hosted in Docker Hub
+        image: jacegonzales25/vprofiledb
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: vpro-db-data  
