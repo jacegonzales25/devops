@@ -68,7 +68,7 @@
           <mxGeometry x="710" y="50" width="76.5" height="93" as="geometry" />
         </mxCell>
         <mxCell id="u1j98tIg9I-gZDee3qH2-41" value="Availability Zone" style="fillColor=none;strokeColor=#147EBA;dashed=1;verticalAlign=top;fontStyle=0;fontColor=#147EBA;whiteSpace=wrap;html=1;" vertex="1" parent="u1j98tIg9I-gZDee3qH2-29">
-          <mxGeometry x="445" y="420" width="355" height="240" as="geometry" />
+          <mxGeometry x="445" y="390" width="355" height="240" as="geometry" />
         </mxCell>
         <mxCell id="u1j98tIg9I-gZDee3qH2-46" value="PostgreSQL" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="u1j98tIg9I-gZDee3qH2-29">
           <mxGeometry x="490" y="770" width="60" height="30" as="geometry" />
